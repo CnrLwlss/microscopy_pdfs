@@ -15,18 +15,25 @@ types = ["c1","c2","c1-2"]
 ids.sort()
 types.sort()
 
-pdf = FPDF()
+pdf = FPDF('L', 'mm', 'A4')
+pdf.set_font('Arial', 'B', 16)
+pdf.set_text_color(255, 255, 255)
 
-for ident in ids[0:5]:
+for i,ident in enumerate(ids[0:4]):
+    print(ident)
     dat = pmap[pmap.id == ident]
+    lab = "{} {} {}".format(dat.id.values[0],dat.Drug.values[0],dat.Concentration.values[0])
     ims = [Image.open(dat.path[dat.type == t].values[0]) for t in types]
     w,h = ims[0].size
+    pageh = int(round(h*297.0/(3*w)))
     new_im = Image.new('RGB', (w*3,h))
-    for i,im in enumerate(ims):
-        new_im.paste(im,(i*w,0))
-        new_im.save("tmp.png")
+    for j,im in enumerate(ims):
+        new_im.paste(im,(j*w,0))
+    new_im.save("tmp.png",dpi=(3000.0, 3000.0))
+    if i%2==0:
         pdf.add_page()
-        pdf.image("tmp.png",0,0,w,h)
+    pdf.image("tmp.png",0,pageh*(i%2),297,pageh)
+    pdf.cell(297, pageh, lab, 1)
 pdf.output("Report.pdf","F")
         
     
