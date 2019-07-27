@@ -21,7 +21,7 @@ pdf = FPDF('L', 'mm', 'A4')
 pdf.set_font('Arial', 'B', 16)
 pdf.set_text_color(255, 255, 255)
 
-for i,ident in enumerate(ids):
+for i,ident in enumerate(ids[0:1000]):
     print(ident)
     dat = pmap[pmap.id == ident]
     lab = "{} {} {}".format(dat.id.values[0],dat.Drug.values[0],dat.Concentration.values[0])
@@ -32,7 +32,8 @@ for i,ident in enumerate(ids):
     new_im = Image.new('RGB', (w*3,h))
     for j,im in enumerate(ims):
         new_im.paste(im,(j*w,0))
-    new_im.save(lab+"tmp.jpg", quality=60, optimize=True, progressive=True)
+    new_im = new_im.resize((int(round(3*w/5)),int(round(h/5))),Image.ANTIALIAS)
+    new_im.save(lab+"tmp.jpg", quality=75, optimize=True, progressive=True)
     if i%2==0:
         pdf.add_page()
         start = 0
